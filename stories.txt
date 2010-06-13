@@ -1,0 +1,9 @@
+Collector starts game
+
+Collector sows stones
+
+Collector wins game
+
+Collector loses game
+
+Collector plays again
