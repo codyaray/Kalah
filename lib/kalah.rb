@@ -1,1 +1,1 @@
-# require 'kalah/filename'
+require 'kalah/game'
