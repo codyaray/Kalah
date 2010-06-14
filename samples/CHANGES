@@ -1,0 +1,38 @@
+A number of errors were found in the formatting of the sample test cases.
+In numerous cases, the double-space between the SOUTH pits and the NORTH
+kalah was inadvertently single spaced. In one case, the calculation was
+slightly incorrect. You will find a list of all changes made below.
+
+3/input.txt
+2 2 2 2 6 6  6 6 2 2 2 4 0 0
+was changed to
+2 2 2 2 6 6  6 6 2 2 2 4  0 0
+
+3/output.txt
+2 2 2 2 6 6  6 6 2 2 2 4 0 0
+was changed to
+2 2 2 2 6 6  6 6 2 2 2 4  0 0
+and
+0 0 0 2 6 6  6 6 2 2 2 0 0 10
+was changed to
+0 0 0 2 6 6  6 6 2 2 2 0  0 10
+
+4/input.txt
+2 0 2 2 6 6  6 6 2 2 2 5 0 0
+was changed to
+2 0 2 2 6 6  6 6 2 2 2 5  0 0
+
+4/output.txt
+2 0 2 2 6 6  6 6 2 2 2 5 0 0
+was changed to
+2 0 2 2 6 6  6 6 2 2 2 5  0 0
+and
+3 1 0 0 6 6  6 6 2 2 2 5 0 7
+was changed to
+3 1 0 0 6 6  6 6 2 2 2 0  0 7
+[also note the change of SOUTH's pit 6 as well]
+
+5/* was added to capture the case in which the final wrap-around stone
+falls into own of the moving player's empty pits, in which case a
+Go-Again Move is not to be performed. (This test case is a minor
+modification of test case 2.)

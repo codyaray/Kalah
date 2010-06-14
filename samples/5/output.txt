@@ -1,0 +1,7 @@
+Joffyack
+Yoda
+SOUTH
+NORTH
+6 6 6 6 6 6  13 6 6 6 6 6  0 0
+1
+7 7 7 7 7 7  1 7 7 7 7 7  0 1

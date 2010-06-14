@@ -1,0 +1,7 @@
+To run this test suite, make a flag or set the default behavior of your
+program to be to accept a file, accept a move on stdin, and then exit
+immediately saving a file. Alternately, manually load the file given
+as input.txt, make the move using the user interface in whatever manner
+you want and then place the file that is output in the outputs folder
+as the appropriate number followed by '.output'. Enjoy and forward any
+questions or concerns to aeg37@drexel.edu.

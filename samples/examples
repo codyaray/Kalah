@@ -1,0 +1,8 @@
+one capture
+cascading capture
+cascading capture with stop
+automatic go-again
+no automatic go-again in empty or in originating bucket
+5: wrap into empty pit (don't Go Ahead Move)
+2: wrap around into non-empty pit (Go Ahead Move)
+3: cascading capture

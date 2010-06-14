@@ -10,10 +10,10 @@ Feature: collector starts game
     Then the game should say "Welcome to Kalah!"
     And the game should say "Select pit for sowing:"
 
-  # Scenario: start saved game
-  #   Given a saved game "example_game.kalah"
-  #   When I restart the saved game
-  #   Then the game should show previous game states
+  Scenario: start saved game
+    Given a saved game "example_game"
+    When I restart the saved game
+    Then the game should show previous game states
 
   # Scenario: start game in testing mode
   #   Given a saved game for testing

@@ -1,12 +1,46 @@
+def messenger
+  @messenger ||= StringIO.new
+end
+
+def referee
+  @referee ||= Kalah::Referee.new(messenger)
+end
+
+def messages_should_include(message)
+  messenger.string.split("\n").should include(message)
+end
+
 Given /^I am not yet playing$/ do
 end
 
 When /^I start a new game$/ do
-  @messenger = StringIO.new
-  game = Kalah::Game.new(@messenger)
-  game.start
+  referee.start_game
 end
 
 Then /^the game should say "(.*)"$/ do |message|
-  @messenger.string.split("\n").should include(message)
+  messages_should_include(message)
+end
+
+Given /^the board is (.*)$/ do |board|
+  referee.start_game(board)
+end
+
+When /^the (.*) collector sows stones from pit (.*)$/ do |position, pit|
+  referee.board.sow(position.to_sym,pit.to_i)
+end
+
+Then /^the board should be (.*)$/ do |board|
+  referee.board.to_s.should == board
+end
+
+Given /^a saved game "([^\"]*)"$/ do |game_id|
+  @game_id = game_id
+end
+
+When /^I restart the saved game$/ do
+  referee.start_game_from_file(@game_id)
+end
+
+Then /^the game should show previous game states$/ do
+  # not sure how to implement this
 end
