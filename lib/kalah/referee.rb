@@ -22,15 +22,15 @@ module Kalah
     
     def start_game_from_file(game_id)
       file = File.join(File.dirname(__FILE__), "..","..","games",game_id+".kalah")
-      File.open(file, "r") do |game_file|
-        begin
+      begin
+        File.open(file, "r") do |game_file|
           player1name = game_file.gets.strip
           player2name = game_file.gets.strip
           player1pos  = game_file.gets.strip
           player2pos  = game_file.gets.strip
 
           @messenger.puts player1name, player2name, player1pos, player2pos if @fmt_file
-          
+        
           player1pos = player1pos.downcase.to_sym
           player2pos = player2pos.downcase.to_sym
 
@@ -50,19 +50,17 @@ module Kalah
             rescue => err
               raise Kalah::SavedGameError, "Corrupt game file: #{err.message}"
             end
-            
+          
         	  if @game_state.to_s != b
         	    raise Kalah::SavedGameError, "Corrupt game file: Expected board \n" +
         	      "  (#{b}) \nis incorrect. Produced board \n  (#{@game_state.to_s})"
       	    end
-      	    
+    	    
       	    change_turn
           end
-        rescue Kalah::SavedGameError => err
-          raise err
-        rescue => err
-          raise Kalah::SavedGameError, "Corrupt game file: #{file}\n#{err}"
         end
+      rescue => err
+        raise Kalah::SavedGameError, "Missing game file: #{game_id}"
       end
     end
     

@@ -5,10 +5,13 @@ module Kalah
     before(:each) do 
       @messenger = mock("messenger").as_null_object
       @referee = Referee.new('player+','player-','game_rules',100,@messenger)
-      @referee.fmt_file = false
     end
 
     context "starting up" do      
+      before(:each) do 
+        @referee.fmt_file = false
+      end
+
       it "should send a welcome message" do
         @messenger.should_receive(:puts).with("Welcome to Kalah!")
         @referee.start_game
@@ -32,7 +35,26 @@ module Kalah
     end
     
     context "starting up from saved game" do
+      before(:each) do 
+        @referee.fmt_file = true
+      end
       
+      it "should result in the last state" do
+        @referee.start_game_from_file "test_game_correct"
+        @referee.game_state.to_s.should == "8 8 8 6 6 0  7 7 0 2 9 8  1 2"
+      end
+      
+      it "should raise an error when the file corresponding to the given game_id does not exist" do
+        lambda { @referee.start_game_from_file "test_game_does_not_exist" }.should raise_error(Kalah::SavedGameError)
+      end
+      
+      it "should raise an error when we calculate a board different from what's expected in the saved game" do
+        lambda { @referee.start_game_from_file "test_game_incorrect_expected_board" }.should raise_error(Kalah::SavedGameError)
+      end
+      
+      it "should raise an error when pit selection is not in [1,6]" do
+        lambda { @referee.start_game_from_file("test_game_invalid_pit") }.should raise_error(Kalah::SavedGameError)
+      end
     end
   end
 end

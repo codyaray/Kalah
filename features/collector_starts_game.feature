@@ -11,7 +11,7 @@ Feature: collector starts game
     And the game should say "Select pit for sowing:"
 
   Scenario: start saved game
-    Given a saved game "example_game"
+    Given a saved game "test_game_correct"
     When I restart the saved game
     Then the board should be 8 8 8 6 6 0  7 7 0 2 9 8  1 2
 
