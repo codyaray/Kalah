@@ -4,7 +4,8 @@ module Kalah
   describe Referee do
     before(:each) do 
       @messenger = mock("messenger").as_null_object
-      @referee = Referee.new(@messenger)
+      @referee = Referee.new('player+','player-','game_rules',100,@messenger)
+      @referee.fmt_file = false
     end
 
     context "starting up" do      

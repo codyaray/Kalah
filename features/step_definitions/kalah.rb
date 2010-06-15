@@ -3,7 +3,9 @@ def messenger
 end
 
 def referee
-  @referee ||= Kalah::Referee.new(messenger)
+  @referee ||= Kalah::Referee.new('player+','player-','game_rules',100,messenger)
+  @referee.fmt_file = false
+  @referee
 end
 
 def messages_should_include(message)
@@ -26,11 +28,11 @@ Given /^the board is (.*)$/ do |board|
 end
 
 When /^the (.*) collector sows stones from pit (.*)$/ do |position, pit|
-  referee.board.sow(position.to_sym,pit.to_i)
+  referee.game_state = referee.game_state.apply_move(Kalah::Move.new(position.to_sym,pit.to_i))
 end
 
 Then /^the board should be (.*)$/ do |board|
-  referee.board.to_s.should == board
+  referee.game_state.to_s.should == board
 end
 
 Given /^a saved game "([^\"]*)"$/ do |game_id|

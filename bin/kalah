@@ -2,5 +2,5 @@
 $: << File.join(File.dirname(__FILE__), "/../lib")
 require 'kalah'
 
-referee = Kalah::Referee.new(STDOUT) 
-referee.start_game
+referee = Kalah::Referee.new('player+','player-','game_rules',100,STDOUT)
+referee.start_game_from_file "example_game"

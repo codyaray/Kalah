@@ -1,4 +1,7 @@
 require 'kalah/game_board'
 require 'kalah/referee'
+require 'kalah/game_state'
+require 'kalah/game_rules'
+require 'kalah/move'
 require 'kalah/saved_game_error'
 require 'kalah/array'
