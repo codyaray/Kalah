@@ -3,8 +3,14 @@ def messenger
 end
 
 def referee
-  @referee ||= Kalah::Referee.new('player+','player-','game_rules',100,messenger)
-  @referee.fmt_file = false
+  unless @referee
+    game_rules = Kalah::GameRules.new
+    player_pos = Kalah::RandomPlayer.new 'Me',  :north, game_rules, messenger
+    player_neg = Kalah::RandomPlayer.new 'You', :south, game_rules, messenger
+    @referee = Kalah::Referee.new player_pos, player_neg, game_rules, 1000, messenger
+    @referee.fmt_file = false
+  end
+
   @referee
 end
 
@@ -43,6 +49,3 @@ When /^I restart the saved game$/ do
   referee.start_game_from_file(@game_id)
 end
 
-Then /^the game should show previous game states$/ do
-  # not sure how to implement this
-end

@@ -2,9 +2,12 @@ require File.join(File.dirname(__FILE__), "/../spec_helper")
 
 module Kalah
   describe Referee do
-    before(:each) do 
+    before(:each) do
       @messenger = mock("messenger").as_null_object
-      @referee = Referee.new('player+','player-','game_rules',100,@messenger)
+      game_rules = Kalah::GameRules.new
+      player_pos = Kalah::RandomPlayer.new 'Me',  :north, game_rules, @messenger
+      player_neg = Kalah::RandomPlayer.new 'You', :south, game_rules, @messenger
+      @referee = Kalah::Referee.new player_pos, player_neg, game_rules, 1000, @messenger
     end
 
     context "starting up" do      
@@ -53,7 +56,7 @@ module Kalah
       end
       
       it "should raise an error when pit selection is not in [1,6]" do
-        lambda { @referee.start_game_from_file("test_game_invalid_pit") }.should raise_error(Kalah::SavedGameError)
+        lambda { @referee.start_game_from_file("test_game_invalid_pit") }.should raise_error
       end
     end
   end

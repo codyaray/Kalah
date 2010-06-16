@@ -14,54 +14,59 @@ module Kalah
 
     def start_game(game_board="6 6 6 6 6 6  6 6 6 6 6 6  0 0")
       @game_state = Kalah::GameState.new(game_board)
-      @messenger.puts "Welcome to Kalah!" unless @fmt_file
-      @messenger.puts @game_state.to_s unless @fmt_file
-      @messenger.puts "Select pit for sowing:" unless @fmt_file
-      @player1turn = true
+      
+      unless @fmt_file
+        @messenger.puts "Welcome to Kalah!"
+        @messenger.puts @game_state.to_s
+        @messenger.puts "Select pit for sowing:"
+      end
     end
     
     def start_game_from_file(game_id)
-      file = File.join(File.dirname(__FILE__), "..","..","games",game_id+".kalah")
+      file = File.join(File.dirname(__FILE__), "..", "..", "games", game_id+".kalah")
+      
       begin
-        File.open(file, "r") do |game_file|
-          player1name = game_file.gets.strip
-          player2name = game_file.gets.strip
-          player1pos  = game_file.gets.strip
-          player2pos  = game_file.gets.strip
+        game_file = File.new(file, "r")
+  	  rescue => err
+  	    raise Kalah::SavedGameError, "Missing game file: #{game_id}"
+	    end
+	    
+      player_pos_name = game_file.gets.strip
+      player_neg_name = game_file.gets.strip
+      player_pos_position = game_file.gets.strip
+      player_neg_position = game_file.gets.strip
+      
+      @messenger.puts player_pos_name, player_neg_name,
+        player_pos_position, player_neg_position if @fmt_file
+      
+      player_pos_position = player_pos_position.downcase.to_sym
+      player_neg_position = player_neg_position.downcase.to_sym
+      
+      @player_pos.name = player_pos_name
+      @player_neg.name = player_neg_name
+      @player_pos.position = player_pos_position
+      @player_neg.position = player_neg_position
 
-          @messenger.puts player1name, player2name, player1pos, player2pos if @fmt_file
-        
-          player1pos = player1pos.downcase.to_sym
-          player2pos = player2pos.downcase.to_sym
+      start_game(board = game_file.gets.strip)
+      @messenger.puts board if @fmt_file
+      while (pit = game_file.gets and board = game_file.gets.strip)
+        pit = pit.strip.to_i
 
-          # @player1 = Kalah::InteractPlayer.new(player1name, player1pos.downcase.to_sym, STDIN, STDOUT)
-          # @player2 = Kalah::InteractPlayer.new(player2name, player2pos.downcase.to_sym, STDIN, STDOUT)
-
-          start_game(b = game_file.gets.strip)
-          @messenger.puts b if @fmt_file
-          while (pit = game_file.gets and b = game_file.gets.strip)
-            pit = pit.strip.to_i
-
-            begin
-              move = @player1turn ? Move.new(player1pos,pit) : Move.new(player2pos,pit)
-          	  @game_state = @game_state.apply_move(move)
-
-          	  @messenger.puts pit, @game_state.to_s if @fmt_file
-            rescue => err
-              raise Kalah::SavedGameError, "Corrupt game file: #{err.message}"
-            end
-          
-        	  if @game_state.to_s != b
-        	    raise Kalah::SavedGameError, "Corrupt game file: Expected board \n" +
-        	      "  (#{b}) \nis incorrect. Produced board \n  (#{@game_state.to_s})"
-      	    end
-    	    
-      	    change_turn
-          end
+        begin
+          next_move = ((@game_state.turn == 1) ? Move.new(player_pos_position,pit) : Move.new(player_neg_position,pit))
+      	  @game_state = @game_state.apply_move(next_move)
+      	  @messenger.puts pit, @game_state.to_s if @fmt_file
+        rescue => err
+          raise Kalah::SavedGameError, "Corrupt game file: #{err.inspect}"
         end
-      rescue => err
-        raise Kalah::SavedGameError, "Missing game file: #{game_id}"
+      
+    	  if @game_state.to_s != board
+    	    raise Kalah::SavedGameError, "Corrupt game file: Expected board \n" +
+    	      "  (#{board}) \nis incorrect. Produced board \n  (#{@game_state.to_s})"
+  	    end
       end
+
+      game_file.close
     end
     
     def play
@@ -96,12 +101,6 @@ module Kalah
       end
       
       return @game_state
-	  end
-		
-    private
-      def change_turn
-        @player1turn = !@player1turn
-        @current_player = @player1turn ? @player1 : @player2
-		  end
+	  end		
   end
 end

@@ -12,11 +12,10 @@ module Kalah
     def initialize_copy(orig)
       @game_board = orig.game_board.clone
       @turn = orig.turn
-      self.freeze
     end
     
     def apply_move(move)
-      new_gs = self.clone
+      new_gs = self.dup
 
       if move.position == :north
         new_gs.sow_from_north(move.pit)
@@ -24,6 +23,8 @@ module Kalah
         new_gs.sow_from_south(move.pit)
       end
 
+      new_gs.turn = -@turn
+      new_gs.freeze
       new_gs
     end
     
@@ -60,7 +61,7 @@ module Kalah
         if pit < 1 or pit > 6
           raise "Pit selection '#{pit}' outside acceptable range [1-6]"
         end
-            
+        
         stones_were_played_on_opponents_side = false
 
         stones = my_pits[pit-1]
@@ -84,21 +85,20 @@ module Kalah
         end
       end
       
-      def calculate_remaining_stones(stones, pits, start_pit)
-        stones - pits[start_pit,stones].length
-      end
-    
       def sow_in_pits(pits, start_pit, num_stones)
         pits[start_pit,num_stones] = pits[start_pit,num_stones].collect{ |x| x+1 }
       end
       
-
       def sow_in_kalah(kalah)
         # kalah is an array of length 1 to store an integer for increment
         # (pass by reference, but ints can't be modified -> new obj created)
         kalah.collect!{ |x| x+1 }
       end
 
+      def calculate_remaining_stones(stones, pits, start_pit)
+        stones - pits[start_pit,stones].length
+      end
+    
       def check_go_again_move(stones, my_pits, your_pits, my_kalah, stones_were_played_on_opponents_side)
         last_stones = stones
         stones = calculate_remaining_stones(stones, my_pits, 0)
@@ -107,7 +107,7 @@ module Kalah
           _sow(last_stones, my_pits, your_pits, my_kalah) # Go Again Move
         end
       end
-    
+      
       def check_cascade_capture(stones, your_pits, my_kalah)
         last_stones = stones
         stones = calculate_remaining_stones(stones, your_pits, 0)
@@ -129,6 +129,6 @@ module Kalah
         if your_pits[pit] == 2 or your_pits[pit] == 3
           cascade_capture(pit, your_pits, my_kalah)
         end
-      end    
+      end
   end
 end

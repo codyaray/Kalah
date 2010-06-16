@@ -2,6 +2,13 @@ require File.join(File.dirname(__FILE__), "/../spec_helper")
 
 module Kalah
   describe GameState do
+    context "board" do
+      it "should default to 6 6 6 6 6 6  6 6 6 6 6 6  0 0" do
+        game_state = GameState.new
+        game_state.to_s.should == "6 6 6 6 6 6  6 6 6 6 6 6  0 0"
+      end
+    end
+    
     context "simple captures" do
       it "should apply_move north's first pit" do
         game_state = GameState.new("6 6 6 6 6 6  6 6 6 6 6 6  0 0")
