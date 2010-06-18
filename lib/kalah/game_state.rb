@@ -1,6 +1,8 @@
 module Kalah
   class GameState
     
+    # current game board and next player's turn
+    # (+1 if player_pos to make next play, -1 if player_neg to make next play)
     attr_accessor :game_board, :turn
     
     def initialize(game_board=nil, turn=nil)
@@ -34,6 +36,11 @@ module Kalah
     
     def sow_from_south(pit)
       _sow(pit, game_board.south_pits, game_board.north_pits, game_board.south_kalah)
+    end
+    
+    def empty_sides
+      _empty_side(game_board.south_pits, game_board.south_kalah) if game_board.north_pits.sum == 0
+      _empty_side(game_board.north_pits, game_board.north_kalah) if game_board.south_pits.sum == 0
     end
     
     def hash
@@ -75,7 +82,7 @@ module Kalah
           pit = 0 # set so looping move (wrap back to own pits) works
 
           # sow in my kalah
-          sow_in_kalah(my_kalah) and stones -= 1 if stones > 0
+          sow_in_kalah(my_kalah,1) and stones -= 1 if stones > 0
 
           # sow in opponent pits
           stones_were_played_on_opponents_side = true if stones > 0
@@ -89,10 +96,10 @@ module Kalah
         pits[start_pit,num_stones] = pits[start_pit,num_stones].collect{ |x| x+1 }
       end
       
-      def sow_in_kalah(kalah)
+      def sow_in_kalah(kalah,stones)
         # kalah is an array of length 1 to store an integer for increment
         # (pass by reference, but ints can't be modified -> new obj created)
-        kalah.collect!{ |x| x+1 }
+        kalah.collect!{ |x| x+stones }
       end
 
       def calculate_remaining_stones(stones, pits, start_pit)
@@ -123,11 +130,18 @@ module Kalah
       def cascade_capture(pit, your_pits, my_kalah)
         stones = your_pits[pit]
         your_pits[pit] = 0
-        my_kalah.collect!{ |x| x+stones }
+        sow_in_kalah(my_kalah,stones)
       
         pit -= 1
         if your_pits[pit] == 2 or your_pits[pit] == 3
           cascade_capture(pit, your_pits, my_kalah)
+        end
+      end
+      
+      def _empty_side(pits, kalah)
+        pits.each_index do |i|
+          sow_in_kalah(kalah, pits[i])
+          pits[i] = 0
         end
       end
   end

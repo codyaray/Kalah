@@ -5,6 +5,14 @@ Feature: capture the stones
   So that my Kalah has the majority of the stones
   And the game is over and provides a congratulatory message
 
+  If a player who has the move has no stones available, the game ends
+  immediately with all the opponent's stones going into the opponent's Kalah.
+  Scenario: player has no moves available
+    Given the board is 0 0 0 0 0 0  1 0 2 0 15 0  26 28
+    When I play the game
+    Then the game should be over
+    And the board should be 0 0 0 0 0 0  0 0 0 0 0 0  26 46
+
   # Scenario: collect half the stones
   #   When I collect over half the stones
   #   Then the game should be over

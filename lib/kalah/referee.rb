@@ -1,7 +1,7 @@
 module Kalah
   class Referee
     
-    attr_accessor :game_state, :fmt_file
+    attr_accessor :game_state, :player_pos, :player_neg, :fmt_file
     
     def initialize(player_pos, player_neg, game_rules, max_moves, messenger=STDOUT)
       @player_pos = player_pos
@@ -9,8 +9,12 @@ module Kalah
       @game_rules = game_rules
       @max_moves = max_moves
       @messenger = messenger
+      
+      @game_rules.referee = self
+
       @fmt_file = true
-    end
+      trap("INT") { @messenger.puts ":::Quitting:::"; exit }
+    end    
 
     def start_game(game_board="6 6 6 6 6 6  6 6 6 6 6 6  0 0")
       @game_state = Kalah::GameState.new(game_board)
@@ -31,29 +35,21 @@ module Kalah
   	    raise Kalah::SavedGameError, "Missing game file: #{game_id}"
 	    end
 	    
-      player_pos_name = game_file.gets.strip
-      player_neg_name = game_file.gets.strip
-      player_pos_position = game_file.gets.strip
-      player_neg_position = game_file.gets.strip
+      @player_pos.name = game_file.gets.strip
+      @player_neg.name = game_file.gets.strip
+      @player_pos.position = game_file.gets.strip.downcase.to_sym
+      @player_neg.position = game_file.gets.strip.downcase.to_sym
       
-      @messenger.puts player_pos_name, player_neg_name,
-        player_pos_position, player_neg_position if @fmt_file
+      @messenger.puts @player_pos.name, @player_neg.name,
+        @player_pos.position.to_s.upcase, @player_neg.position.to_s.upcase if @fmt_file
       
-      player_pos_position = player_pos_position.downcase.to_sym
-      player_neg_position = player_neg_position.downcase.to_sym
-      
-      @player_pos.name = player_pos_name
-      @player_neg.name = player_neg_name
-      @player_pos.position = player_pos_position
-      @player_neg.position = player_neg_position
-
       start_game(board = game_file.gets.strip)
       @messenger.puts board if @fmt_file
       while (pit = game_file.gets and board = game_file.gets.strip)
         pit = pit.strip.to_i
 
         begin
-          next_move = ((@game_state.turn == 1) ? Move.new(player_pos_position,pit) : Move.new(player_neg_position,pit))
+          next_move = ((@game_state.turn == 1) ? Move.new(@player_pos.position,pit) : Move.new(@player_neg.position,pit))
       	  @game_state = @game_state.apply_move(next_move)
       	  @messenger.puts pit, @game_state.to_s if @fmt_file
         rescue => err
@@ -71,7 +67,7 @@ module Kalah
     
     def play
       for current_move in 0..@max_moves
-        break if @game_rules.is_win?(@game_state) != 0
+        break if @game_rules.is_over?(@game_state)
         
         @messenger.puts @game_state.to_long_s
         
@@ -90,12 +86,20 @@ module Kalah
 
         @game_state = @game_state.apply_move(next_move)
       end
+
+      if @game_rules.is_empty_side?(game_state)
+        @messenger.puts @game_state.to_long_s
+        @messenger.puts "move" + current_move.to_s + "> referee-empty sides"
+        @game_state.empty_sides
+      end
       
       @messenger.puts @game_state.to_long_s
       
-      w = @game_rules.is_win(@game_state)
+      w = @game_rules.is_win?(@game_state)
       if w != 0
         @messenger.puts "Player \"" + (w > 0 ? "+" : "-") + "\" wins!"
+      elsif @game_rules.is_tie?(@game_state)
+        @messenger.puts "You tied."
       else
         @messenger.puts "Nobody wins after " + @max_moves.to_s + " moves."
       end

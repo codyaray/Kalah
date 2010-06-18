@@ -4,12 +4,12 @@ module Kalah
   describe Referee do
     before(:each) do
       @messenger = mock("messenger").as_null_object
-      game_rules = Kalah::GameRules.new
-      player_pos = Kalah::RandomPlayer.new 'Me',  :north, game_rules, @messenger
-      player_neg = Kalah::RandomPlayer.new 'You', :south, game_rules, @messenger
-      @referee = Kalah::Referee.new player_pos, player_neg, game_rules, 1000, @messenger
+      game_rules = GameRules.new
+      player_pos = RandomPlayer.new 'Me',  :north, game_rules, @messenger
+      player_neg = RandomPlayer.new 'You', :south, game_rules, @messenger
+      @referee   = Referee.new player_pos, player_neg, game_rules, 1000, @messenger
     end
-
+    
     context "starting up" do      
       before(:each) do 
         @referee.fmt_file = false

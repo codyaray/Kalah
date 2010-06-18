@@ -1,0 +1,21 @@
+== Kalah Requests ==
+
+* Your program should allow either player to be human or computer.
+
+* A human player is prompted to input a legal move.
+
+* A computer player choses a legal move at random. 
+
+* In a future assignment, a computer player makes an intelligent move.
+
+* Your program should allow either player to make either the first or second move.
+
+* Your program should should allow either player to be either the NORTH or SOUTH player. Your program should be able to play the part of this player (or the other player).
+
+* Your program will output one of the digits 1...6 as its move, indicating that it is choosing the corresponding pit 1...6 to sow from. If it cannot move, output a 0.
+
+* Your program should display a reasonable representation of the Kalah board after each of its moves and each of its opponent's moves. It should also output representations of intermediate boards, when a go-again move has occurred (with appropriate labeling).
+
+* Your program should also be able to output the board state in a compact 14-element list of values, in this order: NORTH's pits, 1 2 3 4 5 6 SOUTH's pits, 1 2 3 4 5 6, NORTH's Kalah, SOUTH's Kalah.
+
+* Your program should be able to start with any configuration (partially played game, read from a file), make its move, and rewrite the file with updated state information. The format used for the file will consist of various game configuration information and a transcript of a game played so far.

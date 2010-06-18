@@ -1,0 +1,21 @@
+== Kalah Rules ==
+
+* Each player owns the six small pits before them and the larger pit on their right (their Kalah).
+
+* To start the game, each small pit is filled with some number k of stones, with k=6 a typical value.
+
+* Players alternate turns.
+
+* Play begins with one player removing all stones from one of the player's small pits, and sowing them into other pits in counterclockwise fashion around the board. Sowing begins in the pit to the right of the source pit and includes the player's own Kalah and the opponent's small pits, but not the opponent's Kalah.
+
+* It can be advantageous for sowing to continue around the board, back to the player's side. This is referred to as a Looping Move.
+
+* If the last stone falls into one of the moving player's own small nonempty pits and stones were played on the opponent's side during the sowing, the stones in the final pit are used to start a Go-Again Move, just like the original move. A player can have an arbitrarily long chain of go-agains.
+
+* If the final stone sown falls in one of the opponent's small pits and there are either two or three stones in the pit, the stones are captured, and placed in the moving player's Kalah.
+
+* Whenever one pit is captured, the preceding pit may be captured if it contains two or three stones as well. Theoretically, a player could completely clear out an opponent's side in one move.
+
+* The game is over as soon as more than half the stones are in one player's Kalah. 
+
+* If a player who has the move has no stones available, the game ends immediately with all the opponent's stones going into the opponent's Kalah.

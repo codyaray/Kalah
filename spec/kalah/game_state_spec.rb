@@ -95,6 +95,13 @@ module Kalah
         game_state = game_state.apply_move(Kalah::Move.new(:south,1))
         game_state.to_s.should == "7 7 7 7 7 7  1 7 7 7 7 7  0 1"
     	end
+    	
+    	it "should not go-again a second time without wrapping around again first" do
+        game_state = GameState.new("6 2 6 6 2 9  3 8 5 6 9 7  1 2")
+        game_state = game_state.apply_move(Kalah::Move.new(:north,6))
+        game_state.to_s.should     == "7 0 7 7 3 0  4 9 6 7 10 8  2 2"
+        game_state.to_s.should_not == "7 0 7 7 0 1  5 9 6 7 10 8  3 2"
+      end
     end
     
     context "cascading capture" do
@@ -122,5 +129,11 @@ module Kalah
         game_state.to_s.should == "3 1 0 0 6 6  6 6 2 2 2 0  0 7"
       end
     end
+    
+    it "should move opponent's stones into opponent's Kalah if no stones available" do
+      game_state = GameState.new("0 0 0 0 0 0  1 0 2 0 15 0  26 28")
+      game_state.empty_sides
+      game_state.to_s.should == "0 0 0 0 0 0  0 0 0 0 0 0  26 46"
+    end    
   end
 end

@@ -2,9 +2,9 @@ module Kalah
   class InteractPlayer
     include Player
     
-    def initialize(name, position, game_rules, messenger, input=nil)
+    def initialize(name, position, game_rules, messenger=STDOUT, input=STDIN)
       super(name, position, game_rules, messenger)
-      @input = input || STDIN
+      @input = input
     end
     
     def next_move(game_state)
@@ -19,9 +19,9 @@ module Kalah
       s.downcase!
       return nil if s.starts_with? 'q'
       if s.starts_with? 'h'
-        @messenger.puts "Enter a number [1-6] to sow from the given pit,\n"+
-          "north's pits are on top and kalah's on the left,\n"+
-          "south's pits are on bottom and kalah's on the right."
+        @messenger.puts "  Enter a number [1-6] to sow from the given pit,\n"+
+          "  north's pits are on top and kalah is on the left,\n"+
+          "  south's pits are on bottom and kalah is on the right."
         return next_move(game_state)
       end
       
@@ -32,6 +32,7 @@ module Kalah
         return next_move(game_state)
       end
       
+      move = Move.new(position, move)
       unless @game_rules.is_legal? game_state, move
         @messenger.puts "Illegal move - try again"
         return next_move(game_state)
@@ -41,12 +42,3 @@ module Kalah
     end
   end
 end
-
-# gr = Kalah::GameRules.new("alldiag")
-# p = Kalah::InteractPlayer.new(gr)
-# gs = Kalah::GameState.new
-# gs = gs.applyMove(Kalah::Move.new(1,1))
-# puts gs.to_long_s
-# puts gr.legalMoves(gs)
-# puts gr.isLegal(gs,Kalah::Move.new(2,2))
-# puts p.get_next_move(gs)

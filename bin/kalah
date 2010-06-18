@@ -6,14 +6,15 @@ require 'kalah'
 def main
   messenger  = STDOUT
   game_rules = Kalah::GameRules.new
-  myplayer   = Kalah::InteractPlayer.new 'Me',  :north, game_rules, messenger
-  player     = Kalah::InteractPlayer.new 'You', :south, game_rules, messenger
+  # myplayer   = Kalah::InteractPlayer.new 'Me', :north, game_rules, messenger
+  myplayer   = Kalah::RandomPlayer.new 'Me',  :north, game_rules, messenger
+  player     = Kalah::RandomPlayer.new 'You', :south, game_rules, messenger
   max_moves  = 1000
   
   referee = Kalah::Referee.new myplayer, player, game_rules, max_moves, messenger
-  referee.start_game_from_file "test_game_correct"
-
-  #game_state = referee.play
+  referee.start_game#_from_file "test_game_correct"
+  
+  game_state = referee.play
 end
 
 main

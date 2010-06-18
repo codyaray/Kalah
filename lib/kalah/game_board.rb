@@ -1,5 +1,3 @@
-# methods in kalah_working, not here
-# is_either_side_empty?
 module Kalah
   class GameBoard
     
@@ -21,6 +19,14 @@ module Kalah
     
     def initialize_copy(orig)
       set(orig.north_pits.clone,orig.south_pits.clone,orig.north_kalah.clone,orig.south_kalah.clone)
+    end
+    
+    def pits(position)
+      if position == :north
+        return north_pits
+      elsif position == :south
+        return south_pits
+      end
     end
     
     def set(north_pits, south_pits, north_kalah, south_kalah)
