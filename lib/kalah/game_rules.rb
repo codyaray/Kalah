@@ -12,6 +12,8 @@ module Kalah
     end
     
     def legal_moves(game_state)
+      move_list = []
+
       # Player can only sow from their side of the board
       if game_state.turn == +1
         position = @referee.player_pos.position
@@ -20,10 +22,13 @@ module Kalah
       end
       
       # Player can only sow from non-empty pits      
-      move_list = []
       pits = game_state.game_board.pits(position)
-      (1..6).each do |i|
-        move_list << Move.new(position,i) if pits[i-1] > 0
+      if pits.sum == 0 # no moves available
+        move_list << Move.new(position,0)
+      else
+        (1..6).each do |i|
+          move_list << Move.new(position,i) if pits[i-1] > 0
+        end
       end
       
       move_list
@@ -63,7 +68,7 @@ module Kalah
     end
     
     def is_over?(game_state)
-      is_win?(game_state) != 0 or is_tie?(game_state) or is_empty_side?(game_state)
+      is_win?(game_state) != 0 or is_tie?(game_state)
     end
   end
 end

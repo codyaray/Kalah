@@ -8,7 +8,6 @@ Feature: collector starts game
     Given I am not yet playing
     When I start a new game
     Then the game should say "Welcome to Kalah!"
-    And the game should say "Select pit for sowing:"
 
   Scenario: start saved game
     Given a saved game "test_game_correct"

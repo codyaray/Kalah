@@ -18,8 +18,10 @@ module Kalah
     
     def apply_move(move)
       new_gs = self.dup
-
-      if move.position == :north
+      
+      if move.pit == 0
+        new_gs.empty_sides
+      elsif move.position == :north
         new_gs.sow_from_north(move.pit)
       elsif move.position == :south
         new_gs.sow_from_south(move.pit)

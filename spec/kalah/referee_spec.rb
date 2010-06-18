@@ -7,41 +7,18 @@ module Kalah
       game_rules = GameRules.new
       player_pos = RandomPlayer.new 'Me',  :north, game_rules, @messenger
       player_neg = RandomPlayer.new 'You', :south, game_rules, @messenger
-      @referee   = Referee.new player_pos, player_neg, game_rules, 1000, @messenger
+      @referee   = Referee.new player_pos, player_neg, game_rules, 1000, Referee::FMT_FILE, @messenger
     end
     
-    context "starting up" do      
-      before(:each) do 
-        @referee.fmt_file = false
-      end
-
+    context "starting up" do
       it "should send a welcome message" do
+        @referee.msg_format = Referee::FMT_CMDLN
         @messenger.should_receive(:puts).with("Welcome to Kalah!")
         @referee.start_game
       end
-      
-      it "should show the initial board state with default board" do
-        @messenger.should_receive(:puts).with("6 6 6 6 6 6  6 6 6 6 6 6  0 0")
-        @referee.start_game
-      end
-
-      it "should show the initial board state with given board" do
-        state = "0 7 7 7 7 7  6 6 6 6 6 6  1 0"
-        @messenger.should_receive(:puts).with(state)
-        @referee.start_game(state)
-      end
-      
-      it "should prompt for the first pit for sowing" do
-        @messenger.should_receive(:puts).with("Select pit for sowing:")
-        @referee.start_game
-      end
     end
     
-    context "starting up from saved game" do
-      before(:each) do 
-        @referee.fmt_file = true
-      end
-      
+    context "starting up from saved game" do      
       it "should result in the last state" do
         @referee.start_game_from_file "test_game_correct"
         @referee.game_state.to_s.should == "8 8 8 6 6 0  7 7 0 2 9 8  1 2"

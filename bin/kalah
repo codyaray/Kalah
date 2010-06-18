@@ -11,7 +11,7 @@ def main
   player     = Kalah::RandomPlayer.new 'You', :south, game_rules, messenger
   max_moves  = 1000
   
-  referee = Kalah::Referee.new myplayer, player, game_rules, max_moves, messenger
+  referee = Kalah::Referee.new myplayer, player, game_rules, max_moves, Kalah::Referee::FMT_CMDLN, messenger
   referee.start_game#_from_file "test_game_correct"
   
   game_state = referee.play

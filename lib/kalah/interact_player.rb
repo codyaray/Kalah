@@ -21,12 +21,13 @@ module Kalah
       if s.starts_with? 'h'
         @messenger.puts "  Enter a number [1-6] to sow from the given pit,\n"+
           "  north's pits are on top and kalah is on the left,\n"+
-          "  south's pits are on bottom and kalah is on the right."
+          "  south's pits are on bottom and kalah is on the right.\n"+
+          "  Put '0' if there are no possible moves (all pits are empty)."
         return next_move(game_state)
       end
       
       begin
-        move = s.to_i
+        move = Integer(s) # s.to_i doesn't throw exception on non-integer
       rescue => err
         @messenger.puts "Illegal move - try again"
         return next_move(game_state)

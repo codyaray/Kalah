@@ -7,8 +7,8 @@ def referee
     @game_rules = Kalah::GameRules.new
     player_pos = Kalah::RandomPlayer.new 'Me',  :north, @game_rules, messenger
     player_neg = Kalah::RandomPlayer.new 'You', :south, @game_rules, messenger
-    @referee = Kalah::Referee.new player_pos, player_neg, @game_rules, 1000, messenger
-    @referee.fmt_file = false
+    @referee = Kalah::Referee.new player_pos, player_neg, @game_rules, 1000,
+      Kalah::Referee::FMT_CMDLN, messenger
   end
 
   @referee
