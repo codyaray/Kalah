@@ -1,8 +1,10 @@
 module Kalah
   class Referee
     
-    FMT_FILE    = :file
-    FMT_CMDLN   = :cmdln
+    FMT_FILE    = :file  # file format
+    FMT_CMDLN   = :cmdln # command-line interface
+    FMT_QUIET   = :quiet # output as little as possible
+    FMT_VBOSE   = :vbose # verbose output
     
     attr_accessor :game_state, :player_pos, :player_neg, :msg_format
     
@@ -91,7 +93,7 @@ module Kalah
         
         show_board
       end
-            
+                  
       w = @game_rules.is_win?(@game_state)
       if w != 0
         @messenger.puts "Player \"" + (w > 0 ? "+" : "-") + "\" wins!" if @msg_format == FMT_CMDLN
@@ -99,6 +101,10 @@ module Kalah
         @messenger.puts "You tied." if @msg_format == FMT_CMDLN
       else
         @messenger.puts "Nobody wins after " + @max_moves.to_s + " moves." if @msg_format == FMT_CMDLN
+      end
+      
+      if @msg_format == FMT_QUIET
+        @messenger.puts @game_state
       end
       
       return @game_state

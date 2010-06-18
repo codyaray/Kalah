@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+$: << File.join(File.dirname(__FILE__), "/../lib")
+require 'kalah'
+
+def main
+  messenger  = STDOUT
+  game_rules = Kalah::GameRules.new
+  # myplayer   = Kalah::InteractPlayer.new 'Me', :north, game_rules, messenger
+  myplayer   = Kalah::RandomPlayer.new 'Me',  :north, game_rules, messenger
+  player     = Kalah::RandomPlayer.new 'You', :south, game_rules, messenger
+  max_moves  = 1000
+  
+  referee = Kalah::Referee.new myplayer, player, game_rules, max_moves, Kalah::Referee::FMT_CMDLN, messenger
+  referee.start_game#_from_file "test_game_correct"
+  
+  game_state = referee.play
+end
+
+main

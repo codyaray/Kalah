@@ -1,20 +1,234 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env ruby 
 
-$: << File.join(File.dirname(__FILE__), "/../lib")
+# == Synopsis 
+#   Kalah allows you to play Kalah against another person or a computer.
+#   Kalah is a platform for experimenting with AI algorithms in context
+#   of an adversarial two-player game. You can easily implement additional
+#   players using whatever AI you see fit, and can either play against them
+#   yourself or pit two AIs against eachother.
+#
+# == Examples
+#   This command allows you to play (interactive) against a random player.
+#     kalah --player1 interact --player2 random
+#
+#   This command pits alphabeta against first-player north minimax.
+#     kalah --player1 minimax,north --player2 alphabeta
+#
+#   This command reads a saved game from a file, allowing you to resume play.
+#     kalah saved_game1.kalah
+#
+#   Other examples:
+#     kalah -1 alphabeta,south saved_game1.kalah
+#     kalah -q saved_game1.kalah
+#     kalah --verbose saved_game1.kalah
+#
+# == Usage 
+#   kalah [options] saved_game_file
+#
+#   For help use: kalah -h
+#
+# == Options
+# === Specific Options
+#   -1, --player1 [T,P] Set player1 (interact, random), (north, south)
+#   -2, --player2 [T,P] Set player2 (interact, random), (north, south)
+#   -x, --exec          Accept a file, accept a move on stdin, and exit
+# === Common Options
+#   -h, --help          Displays help message
+#   -v, --version       Display the version, then exit
+#   -q, --quiet         Output as little as possible, overrides verbose
+#   -V, --verbose       Verbose output
+#
+# == Author
+#   Cody A. Ray
+#
+# == Copyright
+#   Copyright (c) 2010 Cody A. Ray. Licensed under the MIT License:
+#   http://www.opensource.org/licenses/mit-license.php
+
+$LOAD_PATH.push File.join(File.dirname(__FILE__), "/../lib")
 require 'kalah'
 
-def main
-  messenger  = STDOUT
-  game_rules = Kalah::GameRules.new
-  # myplayer   = Kalah::InteractPlayer.new 'Me', :north, game_rules, messenger
-  myplayer   = Kalah::RandomPlayer.new 'Me',  :north, game_rules, messenger
-  player     = Kalah::RandomPlayer.new 'You', :south, game_rules, messenger
-  max_moves  = 1000
+require 'optparse' 
+require 'rdoc/usage'
+require 'ostruct'
+require 'date'
+
+class App
+  VERSION = '0.0.1'
   
-  referee = Kalah::Referee.new myplayer, player, game_rules, max_moves, Kalah::Referee::FMT_CMDLN, messenger
-  referee.start_game#_from_file "test_game_correct"
+  PLAYERS = [:player1, :player2]
+  PLAYERS_ALIASES = { :p1 => :player1, :p2 => :player2, :'1' => :player1, :'2' => :player2 }
   
-  game_state = referee.play
+  attr_reader :options
+
+  def initialize(arguments, stdin, stdout)
+    @arguments = arguments
+    @stdin = stdin
+    @stdout = stdout
+    
+    # Set defaults
+    @options = OpenStruct.new
+    @options.verbose = false
+    @options.quiet = false
+    @options.player1 = %w[interact  north]
+    @options.player2 = %w[random    south]
+    @options.exec = false
+  end
+
+  # Parse options, check arguments, then process the command
+  def run
+        
+    if parsed_options? && arguments_valid? 
+      
+      puts "Start at #{DateTime.now}\n\n" if @options.verbose
+      
+      output_options if @options.verbose # [Optional]
+            
+      process_arguments            
+      process_command
+      
+      puts "\nFinished at #{DateTime.now}" if @options.verbose
+      
+    else
+      output_usage
+    end
+      
+  end
+  
+  protected
+  
+    def parsed_options?
+      
+      # Specify options
+      opts = OptionParser.new
+      opts.on('-1', '--player1 [T,P]', Array)                { |tp|  @options.player1 = tp }
+      opts.on('-2', '--player2 [T,P]', Array)                { |tp|  @options.player2 = tp }
+      opts.on('-x', '--exec')                                { @options.exec = true }
+      opts.on('-v', '--version')                             { output_version ; exit 0 }
+      opts.on('-h', '--help')                                { output_help }
+      opts.on('-V', '--verbose')                             { @options.verbose = true }  
+      opts.on('-q', '--quiet')                               { @options.quiet = true }
+            
+      opts.parse!(@arguments) rescue return false
+      
+      process_options
+      true      
+    end
+
+    # Performs post-parse processing on options
+    def process_options
+      @options.verbose = false if @options.quiet
+      @options.player1.collect!{ |x| x.to_sym }
+      @options.player2.collect!{ |x| x.to_sym }
+      create_players_from_options(@options.player1, @options.player2)
+    end
+    
+    def create_players_from_options(p1, p2)
+      player1          = OpenStruct.new
+      player2          = OpenStruct.new
+      player1.name     = p1[0].to_s.capitalize
+      player2.name     = p2[0].to_s.capitalize
+      player1.operator = p1[0]
+      player2.operator = p2[0]
+      player1.position = p1[1]
+      player2.position = p2[1]
+      
+      if player1.position == :north
+        player1.position = :north
+        player2.position = :south
+      else
+        player1.position = :south
+        player2.position = :north
+      end
+
+      @game_rules = Kalah::GameRules.new
+      @max_moves  = 1000
+      
+      @player1 = create_player(player1)
+      @player2 = create_player(player2)      
+    end
+    
+    def create_player(player)
+      if player.operator == :interact
+        return Kalah::InteractPlayer.new(player.name, player.position, @game_rules, @stdout, @stdin)
+      elsif player.operator == :random
+        return Kalah::RandomPlayer.new(player.name, player.position, @game_rules, @stdout)
+      # elsif player.operator == :minimax
+      #   return Kalah::MinimaxPlayer.new(player.name, player.position, @game_rules, @stdout)
+      # elsif player.operator == :aphabeta
+      #   return Kalah::AlphabetaPlayer.new(player.name, player.position, @game_rules, @stdout)
+      else
+        output_help
+      end
+    end
+    
+    def output_options
+      puts "Options:\n"
+      
+      @options.marshal_dump.each do |name, val|        
+        puts "  #{name} = #{val}"
+      end
+
+      puts
+    end
+
+    # True if required arguments were provided
+    def arguments_valid?
+      true # no required arguments
+    end
+    
+    # Setup the arguments
+    def process_arguments
+      arguments = OpenStruct.new
+      arguments.saved_game_file = @arguments[0] if @arguments.length > 0
+      @arguments = arguments
+    end
+    
+    def output_help
+      output_version
+      RDoc::usage() #exits app
+    end
+    
+    def output_usage
+      RDoc::usage('usage') # gets usage from comments above
+    end
+    
+    def output_version
+      puts "#{File.basename(__FILE__)} version #{VERSION}"
+    end
+    
+    def process_command
+      @format  = @options.quiet ? Kalah::Referee::FMT_FILE : Kalah::Referee::FMT_CMDLN
+      @referee = Kalah::Referee.new @player1, @player2, @game_rules, @max_moves, @format, @stdout
+
+      if @arguments.saved_game_file
+        begin
+          @referee.start_game_from_file @arguments.saved_game_file
+        rescue => err
+          puts "#{err}"
+        end
+      else
+        @referee.start_game
+      end
+
+      process_standard_input
+    end
+
+    def process_standard_input
+      if @options.exec
+        game_board = @referee.game_state.game_board
+        position = ((@game_state.turn == 1) ? @referee.player_pos : @referee.player_neg).position
+        @stdin.each do |line|
+          game_board.apply_move(Kalah::Move.new(position,line.to_i))
+        end
+
+        exit
+      end
+
+      game_state = @referee.play
+    end
 end
 
-main
+# Create and run the application
+app = App.new(ARGV, STDIN, STDOUT)
+app.run
