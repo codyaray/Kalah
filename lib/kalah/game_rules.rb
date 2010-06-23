@@ -70,5 +70,34 @@ module Kalah
     def is_over?(game_state)
       is_win?(game_state) != 0 or is_tie?(game_state)
     end
+    
+    # A better evaluation function which gives more preference to moves
+    # that wrap around back to my side or to the opponent's side
+    #
+    # TODO: This heuristic reeks of uselessness. Try it. Its no better than
+    # the raw game_state.score
+    def wrap_eval(game_state,move)
+        # if the game is over, give a 1000 point bonus to the winning player
+        if is_over?(game_state)
+          score = game_state.score(move.position)
+          if score > 0
+            return 1000
+          elsif score < 0
+            return -1000
+          else
+            return 0
+          end
+        end
+        
+        score = game_state.score(move.position)
+        end_pit = move.pit + game_state.game_board.pits(move.position)[move.pit-1]
+        if end_pit > 12
+          score += 2
+        elsif end_pit > 6
+          score += 1
+        end
+        
+        score
+      end
   end
 end

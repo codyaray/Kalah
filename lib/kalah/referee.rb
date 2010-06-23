@@ -74,7 +74,7 @@ module Kalah
       
       for current_move in 0..@max_moves
         break if @game_rules.is_over?(@game_state)
-                
+        
         next_move = ((@game_state.turn == 1) ? @player_pos : @player_neg).next_move(@game_state)
         unless next_move
           @messenger.puts ":::Quitting:::"
@@ -93,14 +93,16 @@ module Kalah
         
         show_board
       end
-                  
-      w = @game_rules.is_win?(@game_state)
-      if w != 0
-        @messenger.puts "Player \"" + (w > 0 ? "+" : "-") + "\" wins!" if @msg_format == FMT_CMDLN
-      elsif @game_rules.is_tie?(@game_state)
-        @messenger.puts "You tied." if @msg_format == FMT_CMDLN
-      else
-        @messenger.puts "Nobody wins after " + @max_moves.to_s + " moves." if @msg_format == FMT_CMDLN
+
+      if @msg_format == FMT_CMDLN
+        w = @game_rules.is_win?(@game_state)
+        if w != 0
+          @messenger.puts "Player \"" + (w > 0 ? player_pos.name : player_neg.name) + "\" wins!"
+        elsif @game_rules.is_tie?(@game_state)
+          @messenger.puts "You tied."
+        else
+          @messenger.puts "Nobody wins after " + @max_moves.to_s + " moves."
+        end
       end
       
       if @msg_format == FMT_QUIET

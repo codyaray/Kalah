@@ -44,7 +44,21 @@ module Kalah
       _empty_side(game_board.south_pits, game_board.south_kalah) if game_board.north_pits.sum == 0
       _empty_side(game_board.north_pits, game_board.north_kalah) if game_board.south_pits.sum == 0
     end
-    
+
+    # The current game score w.r.t. player whose move it is.
+    # 
+    # This is a very simple evaluation of the position for non-terminal positions.
+    # For terminal positions this will return the final 'score'.
+    #
+    # TODO game_state should be able to deal with turns, and deduce position
+    # e.g., a referee= initializer and referee.next_player(game_state).position
+    def score(position)
+      opponent_position = [:north,:south]-[position]
+      opponent_position = opponent_position[0]
+      
+      game_board.kalah(position)[0]-game_board.kalah(opponent_position)[0]
+    end
+        
     def hash
       @game_board.hash*3 + @turn + 1
     end

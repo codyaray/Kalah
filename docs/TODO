@@ -1,0 +1,10 @@
+lib/kalah/move.rb: overwrite comparators for minimax/alpha-beta static evaluation function
+
+******************************************************************************
+**It should also output representations of intermediate boards, when a 
+* go-again move has occurred (with appropriate labeling).
+
+** Your program should be able to start with any configuration (partially 
+* played game, read from a file), make its move, and rewrite the file with 
+* updated state information. 
+******************************************************************************

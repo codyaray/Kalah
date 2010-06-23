@@ -21,6 +21,14 @@ module Kalah
       set(orig.north_pits.clone,orig.south_pits.clone,orig.north_kalah.clone,orig.south_kalah.clone)
     end
     
+    def kalah(position)
+      if position == :north
+        return north_kalah
+      elsif position == :south
+        return south_kalah
+      end
+    end
+    
     def pits(position)
       if position == :north
         return north_pits

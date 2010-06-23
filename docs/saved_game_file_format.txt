@@ -1,0 +1,17 @@
+The format consists of game configuration information and a transcript of the saved game plays:
+
+Player "+" Name
+Player "-" Name
+Player "+" Position
+Player "-" Position
+Game Board Configuration 1 (Initial)
+Player "+" Move 1
+Game Board Configuration 2
+Player "-" Move 1
+Game Board Configuration 3
+Player "+" Move 2
+Game Board Configuration 4
+Player "-" Move 2
+Game Board Configuration 5
+Player "+" Move 3
+Game Board Configuration 6

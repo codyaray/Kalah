@@ -155,7 +155,9 @@ class App
         return Kalah::RandomPlayer.new(player.name, player.position, @game_rules, @stdout)
       # elsif player.operator == :minimax
       #   return Kalah::MinimaxPlayer.new(player.name, player.position, @game_rules, @stdout)
-      # elsif player.operator == :aphabeta
+      # elsif player.operator == :negamax
+      #   return Kalah::NegamaxPlayer.new(player.name, player.position, @game_rules, @stdout)
+      # elsif player.operator == :alphabeta
       #   return Kalah::AlphabetaPlayer.new(player.name, player.position, @game_rules, @stdout)
       else
         output_help
