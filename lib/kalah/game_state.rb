@@ -72,7 +72,7 @@ module Kalah
     end
 
     def ==(gs)
-      gs.game_board == @game_board and gs.turn != @turn
+      gs.game_board == @game_board and gs.turn == @turn
     end
     
     def eql?(gs)

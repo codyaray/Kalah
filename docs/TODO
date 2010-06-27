@@ -1,4 +1,4 @@
-lib/kalah/move.rb: overwrite comparators for minimax/alpha-beta static evaluation function
+lib/kalah/move.rb: overwrite comparators for minimax/alpha-beta static evaluation function (ordering)
 
 ******************************************************************************
 **It should also output representations of intermediate boards, when a 
@@ -8,3 +8,29 @@ lib/kalah/move.rb: overwrite comparators for minimax/alpha-beta static evaluatio
 * played game, read from a file), make its move, and rewrite the file with 
 * updated state information. 
 ******************************************************************************
+
+extract the basic game engine/framework (rules, state, player, referee) into duck-typed interfaces to make it a game-independent platform for programming various two-player adversarial AI strategy games.
+
+implement kalah, tic-tac-toe, and othello on this engine.
+
+implement time-restricted (15s) iterative-deepening
+
+"Describe and implement a real-time, multiplayer game-playing environment, where time is part of the environment state and players are given fixed time allocations."
+- Artificial Intelligence, A Modern Approach, 2nd Edition, problem 6.9
+
+"Describe or implement state descriptors, move generators, terminal tests, utility functions, and evaluation functions for one or more of the following games: Monopoly, Scrabble, bridge (assuming a given contract), and poker (choose your variety)."
+- Artificial Intelligence, A Modern Approach, 2nd Edition, problem 6.10
+
+extract minimax, minimax_value and alphabeta, alphabeta_value into separate modules to be included in player classes.
+
+write tests for alphabeta and minimax.
+
+write a better evaluation function (than game_rules.wrap_eval)
+
+implement an iterative deepening routine (separate module) which can be used with either the minimax or alphabeta algorithms in any player.
+
+write a Kalah::Match class for easier performance testing
+- report winner, final score (kalah[winner]-kalah[loser])
+- report game runtime (execution), avg runtime per ply (for each player)
+- report avg number of plys searched (for each player) & game_states inspected
+

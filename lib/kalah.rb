@@ -1,3 +1,7 @@
+# ruby classes/modules
+require 'benchmark'
+
+# kalah classes/modules
 require 'kalah/referee'
 require 'kalah/game_board'
 require 'kalah/game_state'

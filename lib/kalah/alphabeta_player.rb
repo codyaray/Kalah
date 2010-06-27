@@ -5,6 +5,8 @@ module Kalah
     INFINITY  = 1.0/0.0
     MAX_DEPTH = 3
     
+    attr_accessor :num_states_evaluated
+    
     def initialize(name, position, game_rules, messenger, eval_fn = nil)
       super(name, position, game_rules, messenger)
       @eval_fn = eval_fn
@@ -32,6 +34,7 @@ module Kalah
     # eval_fn instead of using the default game.eval(),
     #         to be used only for non-terminal positions
     def alphabeta(game_state, depth, eval_fn = nil)
+      @num_states_evaluated = 1
       best = nil # 2-elem array [val, move]
 
       # try each move    
@@ -62,7 +65,8 @@ module Kalah
     # alpha = nil => -inf
     # beta = nil => +inf
     def alphabeta_value(game_state, depth, alpha, beta, eval_fn = nil, move = nil)
-      
+      @num_states_evaluated += 1
+
       # if we have reached the maximum depth, the utility is approximated
       # with the evaluation function
       if depth == 0 or @game_rules.is_over?(game_state)

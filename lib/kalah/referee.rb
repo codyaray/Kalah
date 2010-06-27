@@ -68,30 +68,46 @@ module Kalah
       @shown_first_board = true
       game_file.close
     end
-    
+
+    def current_player
+      (@game_state.turn == 1) ? @player_pos : @player_neg
+    end
+  
     def play
       show_board unless @shown_first_board
       
-      for current_move in 0..@max_moves
-        break if @game_rules.is_over?(@game_state)
+      elapsed_time = "%.5s" % Benchmark.realtime do
+        for current_move in 0..@max_moves
+          break if @game_rules.is_over?(@game_state)
         
-        next_move = ((@game_state.turn == 1) ? @player_pos : @player_neg).next_move(@game_state)
-        unless next_move
-          @messenger.puts ":::Quitting:::"
-          return @game_state
-        end        
-        
-        unless @game_rules.is_legal?(@game_state, next_move)
-          @messenger.puts ":::Illegal move " + next_move.to_s
-          return @game_state
-        else
-          @messenger.puts "move" + current_move.to_s + "> " + next_move.to_s if @msg_format == FMT_CMDLN
-          @messenger.puts next_move.pit if @msg_format == FMT_FILE
-        end
+          next_move = nil
+          elapsed_time = "%.5s" % Benchmark.realtime do
+            next_move = current_player.next_move(@game_state)
+          end
+          
+          states_evaluated = ""
+          if current_player.respond_to? :num_states_evaluated
+            states_evaluated = "%.5s states evaluated in " % current_player.num_states_evaluated
+          end
 
-        @game_state = @game_state.apply_move(next_move)
+          unless next_move
+            @messenger.puts ":::Quitting:::"
+            return @game_state
+          end        
         
-        show_board
+          unless @game_rules.is_legal?(@game_state, next_move)
+            @messenger.puts ":::Illegal move " + next_move.to_s
+            return @game_state
+          else
+            @messenger.puts "move" + current_move.to_s + "> " + next_move.to_s +
+              " (#{states_evaluated}#{elapsed_time}s)" if @msg_format == FMT_CMDLN
+            @messenger.puts next_move.pit if @msg_format == FMT_FILE
+          end
+
+          @game_state = @game_state.apply_move(next_move)
+        
+          show_board
+        end
       end
 
       if @msg_format == FMT_CMDLN
@@ -104,11 +120,13 @@ module Kalah
           @messenger.puts "Nobody wins after " + @max_moves.to_s + " moves."
         end
       end
-      
+    
       if @msg_format == FMT_QUIET
         @messenger.puts @game_state
       end
-      
+
+      @messenger.puts "Total time spent playing was #{elapsed_time}s" if @msg_format == FMT_CMDLN
+
       return @game_state
 	  end
 	  

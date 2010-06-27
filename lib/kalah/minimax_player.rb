@@ -5,6 +5,8 @@ module Kalah
     INFINITY  = 1.0/0.0
     MAX_DEPTH = 4
     
+    attr_accessor :num_states_evaluated
+    
     def initialize(name, position, game_rules, messenger)
       super(name, position, game_rules, messenger)
     end
@@ -26,6 +28,7 @@ module Kalah
     # eval_fn instead of using the default game.eval(),
     #         to be used only for non-terminal positions
     def minimax(game_state, depth, eval_fn = nil)
+      @num_states_evaluated = 1
       best = nil
 
       # try each move
@@ -47,6 +50,8 @@ module Kalah
 
     # Find the utility value of the game_state w.r.t. the current player
     def minimax_value(game_state, depth, eval_fn = nil)
+      @num_states_evaluated += 1
+
       # if we have reached the maximum depth, the utility is approximated
       # with the evaluation function
       if depth == 0 or @game_rules.is_over?(game_state)

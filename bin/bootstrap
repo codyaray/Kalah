@@ -16,7 +16,7 @@ def main
   
   referee = Kalah::Referee.new myplayer, player, game_rules, max_moves, msg_format, messenger
   referee.start_game#_from_file "test_game_correct"
-  
+
   game_state = referee.play
 end
 
