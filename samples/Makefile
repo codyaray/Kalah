@@ -1,4 +1,4 @@
-PROGRAM := ../bin/kalah
+PROGRAM := ../bin/run_sample
 
 test:
 	rm -f results.txt

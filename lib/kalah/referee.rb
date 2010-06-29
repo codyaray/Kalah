@@ -6,8 +6,10 @@ module Kalah
     FMT_QUIET   = :quiet # output as little as possible
     FMT_VBOSE   = :vbose # verbose output
     
-    attr_accessor :game_state, :player_pos, :player_neg, :msg_format
+    GAME_PATH   = File.join(File.dirname(__FILE__), "..", "..", "games")
     
+    attr_accessor :game_state, :player_pos, :player_neg, :msg_format
+        
     def initialize(player_pos, player_neg, game_rules, max_moves, msg_format=FMT_CMDLN, messenger=STDOUT)
       @player_pos = player_pos
       @player_neg = player_neg
@@ -26,16 +28,23 @@ module Kalah
       @messenger.puts "Welcome to Kalah!" if @msg_format == FMT_CMDLN
       @shown_first_board = false
     end
-    
+        
     def start_game_from_file(game_id)
-      file = File.join(File.dirname(__FILE__), "..", "..", "games", game_id+".kalah")
+      if File.exist? File.expand_path game_id
+         # given a path to an existing file
+         # (can be relative or include "~")
+        file = File.expand_path game_id
+      else
+        # default game path + extension
+        file = File.join(GAME_PATH, game_id+".kalah")
+      end
       
       begin
         game_file = File.new(file, "r")
   	  rescue => err
   	    raise Kalah::SavedGameError, "Missing game file: #{game_id}"
 	    end
-	    
+
       @player_pos.name = game_file.gets.strip
       @player_neg.name = game_file.gets.strip
       @player_pos.position = game_file.gets.strip.downcase.to_sym
@@ -77,7 +86,7 @@ module Kalah
       show_board unless @shown_first_board
       
       elapsed_time = "%.5s" % Benchmark.realtime do
-        for current_move in 0..@max_moves
+        for current_move in 1..@max_moves
           break if @game_rules.is_over?(@game_state)
         
           next_move = nil

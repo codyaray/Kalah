@@ -2,13 +2,18 @@ module Kalah
   class InteractPlayer
     include Player
     
-    def initialize(name, position, game_rules, messenger=STDOUT, input=STDIN)
+    FMT_CMDLN = Kalah::Referee::FMT_CMDLN
+    FMT_FILE  = Kalah::Referee::FMT_FILE
+    
+    def initialize(name, position, game_rules, messenger=STDOUT, input=STDIN, format=FMT_CMDLN)
       super(name, position, game_rules, messenger)
-      @input = input
+
+      @input  = input
+      @format = format
     end
     
     def next_move(game_state)
-      @messenger.print "(#{name}-#{position.to_s.upcase}) Enter next move (h for help, q to quit): "
+      @messenger.print "(#{name}-#{position.to_s.upcase}) Enter next move (h for help, q to quit): " if @format == FMT_CMDLN
       
       begin
         s = @input.gets
