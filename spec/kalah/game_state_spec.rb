@@ -128,6 +128,12 @@ module Kalah
         game_state = game_state.apply_move(Kalah::Move.new(:south,6))
         game_state.to_s.should == "3 1 0 0 6 6  6 6 2 2 2 0  0 7"
       end
+      
+      it "should cascade clockwise" do
+        game_state = GameState.new("0 2 1 2 1 2  0 0 1 0 17 8  22 16")
+        game_state = game_state.apply_move(Kalah::Move.new(:south,5))
+        game_state.to_s.should == "0 0 2 3 2 3  1 1 2 1 1 10  22 24"
+      end
     end
     
     it "should move opponent's stones into opponent's Kalah if no stones available" do

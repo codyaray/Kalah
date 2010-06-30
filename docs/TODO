@@ -9,6 +9,50 @@ lib/kalah/move.rb: overwrite comparators for minimax/alpha-beta static evaluatio
 * updated state information. 
 ******************************************************************************
 
+******************************************************************************
+explore causes of Minimax's superiority over Alphabeta as we vary AB's MAX_DEPTH (at AB_MD=3/MM_MD=4 it "works" and AB wins, but at AB_MD=4/MM_MD=4 or 5, MM wins; AB_MD=6/MM_MD=4, AB wins.) It appears that the ordering of the children and heurist selected in the Alphabeta player is causing premature pruning that results in poor choices of next move (or the algorithm isn't good, period.)
+
+HINT HINT:
+
+move167> north-1 (213 states evaluated in 0.090s)
+    2  1  2  1  2  0
+22                   16
+    0  0  1  0 17  8
+move168> south-5 (923 states evaluated in 0.373s)
+    0  0  0  0  0  0
+22                   34
+    1  1  2  1  1 10
+
+The problem was that I wasn't checking that pit >= 0 when I was cascading backwards clearing the pits, and we just wrapped around and cleared them all out. This bug is FIXED! On to the next one.
+
+We're not watching out for cascading captures or for side-clearing strategies. HINT HINT:
+
+    5  1  0  0  0  0
+24                   17
+    1  2  1  1 20  0
+move184> south-5 (424 states evaluated in 0.195s)
+    6  0  0  0  0  0
+24                   30
+    2  3  2  2  1  2
+move185> north-6 (24 states evaluated in 0.011s)
+    0  0  0  0  0  0
+25                   30
+    3  4  3  3  2  2
+move186> south-1 (47 states evaluated in 0.028s)
+    0  0  0  0  0  0
+25                   30
+    0  5  4  4  2  2
+move187> north-0 (2 states evaluated in 0.000s)
+    0  0  0  0  0  0
+25                   47
+    0  0  0  0  0  0
+
+
+******************************************************************************
+
+
+clean it up so that the NAME/POSITION provided by a MAIN script does not conflict with those provided by a saved-game file. (ie, if I create two players named A and B, respectively, give them to a Referee, then tell the Ref to start a saved game (start_game_from_file), this overwrites the name and position of what I had originally provided, which is confusing when comparing what I expect to happen looking at my MAIN script with what's really happenin)
+
 extract the basic game engine/framework (rules, state, player, referee) into duck-typed interfaces to make it a game-independent platform for programming various two-player adversarial AI strategy games.
 
 implement kalah, tic-tac-toe, and othello on this engine.

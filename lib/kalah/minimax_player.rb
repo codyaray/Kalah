@@ -5,13 +5,14 @@ module Kalah
     INFINITY  = 1.0/0.0
     MAX_DEPTH = 4
     
-    attr_accessor :num_states_evaluated
+    attr_accessor :num_states_evaluated, :depth_achieved
     
     def initialize(name, position, game_rules, messenger)
       super(name, position, game_rules, messenger)
     end
     
     def next_move(game_state)
+      @depth_achieved = MAX_DEPTH
       minimax(game_state, MAX_DEPTH)
     end
 

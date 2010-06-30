@@ -9,7 +9,7 @@ def main
   eval_fn    = proc { |gs,m| @game_rules.wrap_eval(gs,m) }
   myplayer   = Kalah::AlphabetaPlayer.new 'AlphaBeta', :north, game_rules, messenger, eval_fn
   player     = Kalah::MinimaxPlayer.new 'MiniMax',  :south, game_rules, messenger
-  # player   = Kalah::RandomPlayer.new 'Random',  :south, game_rules, messenger
+  # player   = Kalah::RandomPlayer.new 'Random',  :north, game_rules, messenger
   # player   = Kalah::InteractPlayer.new 'Interact', :south, game_rules, messenger
   msg_format = Kalah::Referee::FMT_CMDLN
   max_moves  = 1000

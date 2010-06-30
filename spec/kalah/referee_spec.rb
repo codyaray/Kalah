@@ -36,5 +36,21 @@ module Kalah
         lambda { @referee.start_game_from_file("test_game_invalid_pit") }.should raise_error
       end
     end
+    
+    context "after winning" do
+      it "should report the correct winner when the north player wins" do
+        @referee.msg_format = Referee::FMT_CMDLN
+        @messenger.should_receive(:puts).with("Player \"Me\" wins!")
+        @referee.start_game("0 0 0 0 0 0  0 0 0 0 0 0  37 35")
+        @referee.play
+      end
+
+      it "should report the correct winner when the south player wins" do
+        @referee.msg_format = Referee::FMT_CMDLN
+        @messenger.should_receive(:puts).with("Player \"You\" wins!")
+        @referee.start_game("0 0 0 0 0 0  0 0 0 0 0 0  35 37")
+        @referee.play
+      end
+    end
   end
 end

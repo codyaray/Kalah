@@ -41,8 +41,8 @@ module Kalah
     def is_legal?(game_state, move)
       move_list = legal_moves(game_state)
       
-      (0..move_list.length-1).each do |i|
-        return true if move == move_list[i]
+      move_list.each do |m|
+        return true if move == m
       end
       
       false
@@ -52,8 +52,9 @@ module Kalah
     # -1 if player -1 has won, and 0 if no one has won.
     # @param gs game state to be checked
     def is_win?(game_state)
-      return +1 if game_state.game_board.north_kalah[0] > game_state.game_board.TOTAL_STONES/2
-      return -1 if game_state.game_board.south_kalah[0] > game_state.game_board.TOTAL_STONES/2
+      position = @referee.player(game_state.turn).position
+      return +game_state.turn if game_state.game_board.kalah(position) > game_state.game_board.TOTAL_STONES/2
+      return -game_state.turn if game_state.game_board.opponent_kalah(position) > game_state.game_board.TOTAL_STONES/2
       0
     end
     

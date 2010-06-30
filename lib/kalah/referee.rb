@@ -3,6 +3,7 @@ module Kalah
     
     FMT_FILE    = :file  # file format
     FMT_CMDLN   = :cmdln # command-line interface
+    FMT_PERF    = :perf  # performance info: num states eval'd, time used, depth achieved
     FMT_QUIET   = :quiet # output as little as possible
     FMT_VBOSE   = :vbose # verbose output
     
@@ -30,7 +31,7 @@ module Kalah
     end
         
     def start_game_from_file(game_id)
-      if File.exist? File.expand_path game_id
+      if File.exist? File.expand_path(game_id)
          # given a path to an existing file
          # (can be relative or include "~")
         file = File.expand_path game_id
@@ -59,7 +60,7 @@ module Kalah
         pit = pit.strip.to_i
 
         begin
-          next_move = ((@game_state.turn == 1) ? Move.new(@player_pos.position,pit) : Move.new(@player_neg.position,pit))
+          next_move = Move.new(current_player.position,pit)
       	  @game_state = @game_state.apply_move(next_move)
       	  @messenger.puts "saved-move> " + next_move.to_s if @msg_format == FMT_CMDLN          
       	  @messenger.puts pit if @msg_format == FMT_FILE
@@ -79,11 +80,17 @@ module Kalah
     end
 
     def current_player
-      (@game_state.turn == 1) ? @player_pos : @player_neg
+      player(@game_state.turn)
     end
-  
+    
+    def player(turn)
+      (turn == 1) ? @player_pos : @player_neg
+    end
+    
     def play
       show_board unless @shown_first_board
+      @messenger.puts "%-40s %-15s %-10s %-10s" % 
+        ["Current Board","States Eval'd","Time Used","Depth Achieved"] if @msg_format == FMT_PERF
       
       elapsed_time = "%.5s" % Benchmark.realtime do
         for current_move in 1..@max_moves
@@ -94,9 +101,15 @@ module Kalah
             next_move = current_player.next_move(@game_state)
           end
           
-          states_evaluated = ""
+          states_evaluated = "", states_evaluated_s = ""
           if current_player.respond_to? :num_states_evaluated
-            states_evaluated = "%.5s states evaluated in " % current_player.num_states_evaluated
+            states_evaluated = "%.5s" % current_player.num_states_evaluated
+            states_evaluated_s = "#{states_evaluated} states evaluated in "
+          end
+
+          depth_achieved = ""
+          if current_player.respond_to? :depth_achieved
+            depth_achieved = "%.4s" % current_player.depth_achieved
           end
 
           unless next_move
@@ -109,8 +122,10 @@ module Kalah
             return @game_state
           else
             @messenger.puts "move" + current_move.to_s + "> " + next_move.to_s +
-              " (#{states_evaluated}#{elapsed_time}s)" if @msg_format == FMT_CMDLN
+              " (#{states_evaluated_s}#{elapsed_time}s)" if @msg_format == FMT_CMDLN
             @messenger.puts next_move.pit if @msg_format == FMT_FILE
+            @messenger.puts "%-40s %-15s %-10s %-10s" % 
+              [game_state,states_evaluated, elapsed_time, depth_achieved] if @msg_format == FMT_PERF
           end
 
           @game_state = @game_state.apply_move(next_move)
@@ -130,7 +145,7 @@ module Kalah
         end
       end
     
-      if @msg_format == FMT_QUIET
+      if @msg_format == FMT_QUIET or @msg_format == FMT_PERF
         @messenger.puts @game_state
       end
 

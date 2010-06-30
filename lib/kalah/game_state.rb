@@ -8,6 +8,11 @@ module Kalah
     def initialize(game_board=nil, turn=nil)
       @game_board = game_board ? GameBoard.new(game_board) : GameBoard.new
       @turn = turn || 1
+      
+      @options = OpenStruct.new
+      @options.messenger = STDOUT
+      @options.verbose = false
+      
       self.freeze
     end
     
@@ -53,10 +58,7 @@ module Kalah
     # TODO game_state should be able to deal with turns, and deduce position
     # e.g., a referee= initializer and referee.next_player(game_state).position
     def score(position)
-      opponent_position = [:north,:south]-[position]
-      opponent_position = opponent_position[0]
-      
-      game_board.kalah(position)[0]-game_board.kalah(opponent_position)[0]
+      game_board.kalah(position)-game_board.opponent_kalah(position)
     end
         
     def hash
@@ -87,6 +89,7 @@ module Kalah
         
         stones_were_played_on_opponents_side = false
 
+        _show_verbose
         stones = my_pits[pit-1]
         my_pits[pit-1] = 0
 
@@ -106,6 +109,8 @@ module Kalah
           check_cascade_capture(stones, your_pits, my_kalah)
           stones = calculate_remaining_stones(stones, your_pits, 0)
         end
+        
+        _show_verbose
       end
       
       def sow_in_pits(pits, start_pit, num_stones)
@@ -128,6 +133,7 @@ module Kalah
         # last stone fell on my side and in a non-empty pit and stones_were_played_on_opposites_side
         if stones == 0 and my_pits[last_stones-1] > 1 and stones_were_played_on_opponents_side
           _sow(last_stones, my_pits, your_pits, my_kalah) # Go Again Move
+          _show_verbose(:go_again)
         end
       end
       
@@ -144,12 +150,14 @@ module Kalah
       end
     
       def cascade_capture(pit, your_pits, my_kalah)
+        _show_verbose(:cascade_capture)
+        
         stones = your_pits[pit]
         your_pits[pit] = 0
         sow_in_kalah(my_kalah,stones)
       
         pit -= 1
-        if your_pits[pit] == 2 or your_pits[pit] == 3
+        if pit >= 0 and (your_pits[pit] == 2 or your_pits[pit] == 3)
           cascade_capture(pit, your_pits, my_kalah)
         end
       end
@@ -158,6 +166,17 @@ module Kalah
         pits.each_index do |i|
           sow_in_kalah(kalah, pits[i])
           pits[i] = 0
+        end
+      end
+      
+      def _show_verbose(type=nil)
+        if @options.verbose
+          @options.messenger.puts to_long_s + "\n\n\n"
+          if type == :go_again
+            @options.messenger.puts "Going again..."
+          elsif type == :cascade_capture
+            @options.messenger.puts "Cascading capture..."
+          end
         end
       end
   end

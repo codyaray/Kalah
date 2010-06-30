@@ -5,7 +5,7 @@ module Kalah
     INFINITY  = 1.0/0.0
     MAX_DEPTH = 3
     
-    attr_accessor :num_states_evaluated
+    attr_accessor :num_states_evaluated, :depth_achieved
     
     def initialize(name, position, game_rules, messenger, eval_fn = nil)
       super(name, position, game_rules, messenger)
@@ -13,6 +13,7 @@ module Kalah
     end
     
     def next_move(game_state)
+      @depth_achieved = MAX_DEPTH
       alphabeta(game_state, MAX_DEPTH)
     end
     

@@ -21,11 +21,20 @@ module Kalah
       set(orig.north_pits.clone,orig.south_pits.clone,orig.north_kalah.clone,orig.south_kalah.clone)
     end
     
+    def set(north_pits, south_pits, north_kalah, south_kalah)
+      @north_pits  = north_pits
+      @south_pits  = south_pits
+      @north_kalah = north_kalah
+      @south_kalah = south_kalah
+
+      @TOTAL_STONES = north_pits.sum + south_pits.sum + north_kalah[0] + south_kalah[0]
+    end
+    
     def kalah(position)
       if position == :north
-        return north_kalah
+        return north_kalah[0]
       elsif position == :south
-        return south_kalah
+        return south_kalah[0]
       end
     end
     
@@ -37,13 +46,12 @@ module Kalah
       end
     end
     
-    def set(north_pits, south_pits, north_kalah, south_kalah)
-      @north_pits  = north_pits
-      @south_pits  = south_pits
-      @north_kalah = north_kalah
-      @south_kalah = south_kalah
-
-      @TOTAL_STONES = north_pits.sum + south_pits.sum + north_kalah[0] + south_kalah[0]
+    def opponent_kalah(position)
+      kalah(_opponent_position(position))
+    end
+    
+    def opponent_pits(position)
+      pits(_opponent_position(position))
     end
     
     def from_s(board)
@@ -88,5 +96,11 @@ module Kalah
     def eql?(gb)
       self == gb
     end
+    
+    private
+      def _opponent_position(position)
+        opponent_position = [:north,:south]-[position]
+        opponent_position = opponent_position[0]
+      end
   end
 end

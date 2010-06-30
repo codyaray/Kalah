@@ -5,6 +5,16 @@ module Kalah
     context "to win" do
       before(:each) do
         @game_rules = GameRules.new
+
+        @referee = mock("referee")
+
+        north_player = mock("player")        
+        south_player = mock("player")
+        north_player.should_receive(:position).any_number_of_times.and_return :north
+        south_player.should_receive(:position).any_number_of_times.and_return :south
+
+        @referee.should_receive(:player).with(instance_of(Fixnum)).once.and_return { |turn| turn == +1 ? north_player : south_player }
+        @game_rules.referee = @referee
       end
       
       it "should occur when north kalah has captured over half the stones" do
@@ -31,7 +41,13 @@ module Kalah
         game_state = GameState.new("0 0 0 0 0 0  0 0 0 0 0 0  36 36")
         @game_rules.is_win?(game_state).should == 0
       end
-      
+    end
+    
+    context "to tie" do
+      before(:each) do
+        @game_rules = GameRules.new
+      end
+          
       it "should tie when each player has captured exactly one half the stones in their kalahs" do
         game_state = GameState.new("0 0 0 0 0 0  0 0 0 0 0 0  36 36")
         @game_rules.is_tie?(game_state).should == true

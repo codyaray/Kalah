@@ -1,5 +1,6 @@
 # ruby classes/modules
 require 'benchmark'
+require 'ostruct'
 
 # kalah classes/modules
 require 'kalah/referee'
