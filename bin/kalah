@@ -29,9 +29,9 @@
 #
 # == Options
 # === Specific Options
-#   -1, --player1 [T,P] Set player1 (interact, random), (north, south)
-#   -2, --player2 [T,P] Set player2 (interact, random), (north, south)
-#   -x, --exec          Accept a file, accept a move on stdin, and exit
+#   -1, --player1 [T,P] Sets P1 (interact,random,minimax,alphabeta), (north,south)
+#   -2, --player2 [T,P] Sets P2 (interact,random,minimax,alphabeta), (north,south)
+#   -x, --exec          Accept a file, accept moves on stdin, and exit
 # === Common Options
 #   -h, --help          Displays help message
 #   -v, --version       Display the version, then exit
@@ -153,12 +153,12 @@ class App
         return Kalah::InteractPlayer.new(player.name, player.position, @game_rules, @stdout, @stdin)
       elsif player.operator == :random
         return Kalah::RandomPlayer.new(player.name, player.position, @game_rules, @stdout)
-      # elsif player.operator == :minimax
-      #   return Kalah::MinimaxPlayer.new(player.name, player.position, @game_rules, @stdout)
+      elsif player.operator == :minimax
+        return Kalah::MinimaxPlayer.new(player.name, player.position, @game_rules, @stdout)
       # elsif player.operator == :negamax
       #   return Kalah::NegamaxPlayer.new(player.name, player.position, @game_rules, @stdout)
-      # elsif player.operator == :alphabeta
-      #   return Kalah::AlphabetaPlayer.new(player.name, player.position, @game_rules, @stdout)
+      elsif player.operator == :alphabeta
+        return Kalah::AlphabetaPlayer.new(player.name, player.position, @game_rules, @stdout)
       else
         output_help
       end
@@ -207,7 +207,8 @@ class App
         begin
           @referee.start_game_from_file @arguments.saved_game_file
         rescue => err
-          puts "#{err}"
+          STDERR.puts "#{err}"
+          exit
         end
       else
         @referee.start_game
@@ -219,8 +220,8 @@ class App
     def process_standard_input
       if @options.exec
         game_board = @referee.game_state.game_board
-        position = ((@game_state.turn == 1) ? @referee.player_pos : @referee.player_neg).position
         @stdin.each do |line|
+          position = @referee.current_player.position
           game_board.apply_move(Kalah::Move.new(position,line.to_i))
         end
 

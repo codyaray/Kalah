@@ -9,6 +9,8 @@ lib/kalah/move.rb: overwrite comparators for minimax/alpha-beta static evaluatio
 * updated state information. 
 ******************************************************************************
 
+consider minor restructure to match the AI architecture used in the first few CS 380 assignments (already done major stuff: state class, apply_move, etc). This might appear mostly superficial: Move->Rule, apply_move->apply_rule, call a function precondition when generating legal rules, etc.
+
 ******************************************************************************
 explore causes of Minimax's superiority over Alphabeta as we vary AB's MAX_DEPTH (at AB_MD=3/MM_MD=4 it "works" and AB wins, but at AB_MD=4/MM_MD=4 or 5, MM wins; AB_MD=6/MM_MD=4, AB wins.) It appears that the ordering of the children and heurist selected in the Alphabeta player is causing premature pruning that results in poor choices of next move (or the algorithm isn't good, period.)
 
